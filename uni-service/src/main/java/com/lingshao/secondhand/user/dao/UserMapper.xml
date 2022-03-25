@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lingshao.secondhand.user.dao.UserDao">
+    <resultMap id="user_info" type="com.lingshao.secondhand.user.entity.User">
+        <result column="id" property="Id"/>
+        <result column="user_num" property="userNumber"/>
+        <result column="user_pwd" property="userPwd"/>
+        <result column="user_name" property="studentName"/>
+        <result column="name" property="userName"/>
+        <result column="is_valid" property="isValid"/>
+        <result column="address" property="Address"/>
+        <result column="avatar" property="Avatar"/>
+        <result column="phone" property="Phone"/>
+        <result column="email" property="Email"/>
+    </resultMap>
+
+    <resultMap id="userPEN" type="com.lingshao.secondhand.user.entity.User">
+        <result column="number" property="userNumber"/>
+        <result column="name" property="userName"/>
+        <result column="address" property="Address"/>
+        <result column="phone" property="Phone"/>
+        <result column="email" property="Email"/>
+    </resultMap>
+
+
+    <select id="getUserInfo" resultMap="user_info">
+		SELECT t1.`id`,t1.user_num,t1.user_pwd,t1.user_name,t2.`name`,t2.address,t2.email,t2.avatar,t2.phone
+		FROM `user` t1
+		LEFT JOIN student t2 ON t1.user_num = t2.number
+		WHERE t1.user_num = #{stuNum} AND t1.user_pwd = #{stuPwd}
+	</select>
+
+    <select id="getAllUserPEN" resultMap="userPEN">
+        SELECT `number`,`name`,phone,email FROM student
+    </select>
+
+    <insert id="addUserInfo">
+        INSERT INTO `user`
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="stuNum != null">
+                user_num,
+            </if>
+            <if test="stuPwd != null">
+                user_pwd,
+            </if>
+            <if test="stuName != null">
+                user_name,
+            </if>
+        </trim>
+        <trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+            <if test="stuNum != null">
+                #{stuNum},
+            </if>
+            <if test="stuPwd != null">
+                #{stuPwd},
+            </if>
+            <if test="stuName != null">
+                #{stuName},
+            </if>
+        </trim>
+    </insert>
+
+    <insert id="addStuInfo">
+        INSERT INTO student
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="stuNum != null">
+                `number`,
+            </if>
+            <if test="stuName != null">
+                `name`,
+            </if>
+            avatar,
+        </trim>
+        <trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+            <if test="stuNum != null">
+                #{stuNum},
+            </if>
+            <if test="stuName != null">
+                #{stuName},
+            </if>
+            "\\userAvatar\\avatar.jpg",
+        </trim>
+    </insert>
+
+    <select id="getPwdByUserNum" resultType="java.lang.String">
+		SELECT user_pwd FROM `user` WHERE user_num = #{schNum}
+	</select>
+
+    <update id="updateUserPwd">
+		UPDATE `user` SET  user_pwd = #{newPwd} WHERE user_num = #{userNum}
+	</update>
+
+    <update id="updateStuInfo">
+        UPDATE student
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="user.Address!=null">address = #{user.Address},</if>
+            <if test="user.Email!=null">email = #{user.Email},</if>
+            <if test="user.Phone!=null">phone = #{user.Phone},</if>
+            <if test="user.userName!=null">`name` = #{user.userName}</if>
+        </trim>
+        WHERE `number` = #{userNum}
+    </update>
+
+    <update id="updateAvatar">
+        UPDATE student SET avatar = #{avatarDir}
+        WHERE `number` = #{userNum}
+    </update>
+
+    <select id="getUserInfoById" resultMap="user_info">
+		SELECT t1.`id`,t1.user_num,t1.user_pwd,t1.user_name,t1.is_valid,t2.`name`,t2.address,t2.email,t2.avatar,t2.phone
+		FROM `user` t1
+		LEFT JOIN student t2 ON t1.user_num = t2.number
+		WHERE t1.user_num = #{stuNumber}
+	</select>
+
+    <select id="selectUserIsValid" resultType="java.lang.Integer">
+        SELECT is_valid FROM `user` WHERE user_num = #{studentNum}
+    </select>
+
+    <select id="getAllUser" resultMap="user_info">
+        SELECT t1.`id`,t1.user_num,t1.user_pwd,t1.user_name,t1.is_valid,t2.`name`,t2.address,t2.email,t2.avatar,t2.phone
+		FROM `user` t1
+		LEFT JOIN student t2 ON t1.user_num = t2.number
+    </select>
+
+    <update id="isValidUser">
+        UPDATE `user` SET is_valid = #{isValid}
+        WHERE user_num = #{stuNumber}
+    </update>
+
+</mapper>

@@ -1,0 +1,5 @@
+net\unisports\entity\Constant$RoleType.class
+net\unisports\entity\Constant.class
+net\unisports\entity\CurrUser.class
+net\unisports\annotation\Pass.class
+net\unisports\util\ComUtil.class

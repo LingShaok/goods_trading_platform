@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lingshao.secondhand.chat.dao.ChatDao">
+    <insert id="addChat">
+        INSERT INTO chat
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            speaker_id,
+            listener_id,
+            message,
+            create_time,
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            #{Message.speakerId},
+            #{Message.listenerId},
+            #{Message.content},
+            NOW(),
+        </trim>
+    </insert>
+
+    <select id="getMessage" resultType="com.lingshao.secondhand.chat.entry.Message">
+        SELECT id,speaker_id AS speakerId ,listener_id AS listenerId, message AS content
+        FROM chat
+        WHERE speaker_id = #{speakerId} AND listener_id = #{listenerId}
+        OR
+        speaker_id = #{listenerId} AND listener_id = #{speakerId}
+        ORDER BY create_time ASC
+    </select>
+
+    <select id="getLisMessageList" resultType="com.lingshao.secondhand.chat.entry.MessageList">
+SELECT
+	t1.listener_id AS listenerId,
+	t1.speaker_id AS speakerId,
+	t1.message AS lastMassage,
+    t2.user_name AS speakerName,
+	MAX(t1.create_time) AS lastTime
+FROM
+	chat t1
+LEFT JOIN `user` t2 ON t1.speaker_id = t2.user_num
+WHERE
+	t1.listener_id = #{listenerId}
+GROUP BY
+	t1.speaker_id
+    </select>
+    <select id="getSpeMessageList" resultType="com.lingshao.secondhand.chat.entry.MessageList">
+        SELECT
+            t1.listener_id AS listenerId,
+            t1.speaker_id AS speakerId,
+            t1.message AS lastMassage,
+            t2.user_name AS listenerName,
+            MAX(t1.create_time) AS lastTime
+        FROM chat t1
+        LEFT JOIN `user` t2 ON t1.listener_id = t2.user_num
+        WHERE t1.speaker_id = #{speakerId}
+        GROUP BY t1.listener_id
+    </select>
+</mapper>

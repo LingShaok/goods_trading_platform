@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lingshao.secondhand.commodity.dao.CommodityDao">
+    <resultMap id="commodityList" type="com.lingshao.secondhand.commodity.entry.Commodity">
+        <id property="commodityId" column="id"/>
+        <result property="commodityName" column="goods_name"/>
+        <result property="Price" column="price"/>
+        <result property="Describe" column="commodityDescribe"/>
+        <result property="Number" column="number"/>
+        <result property="commodityPic" column="picture_url"/>
+        <result property="Transaction" column="transaction"/>
+        <collection property="sellerInfo" ofType="com.lingshao.secondhand.baseinfo.entry.Seller">
+            <result property="sellerId" column="sellerId"/>
+            <result property="sellerAddress" column="address"/>
+            <result property="sellerName" column="name"/>
+            <result property="sellerAvatar" column="sellerAvatar"/>
+            <result property="sellerCount" column="sellerCount"/>
+            <result property="backCount" column="backCount"/>
+            <collection property="sellerEvaluate" ofType="com.lingshao.secondhand.evaluate.entity.Evaluate">
+                <result property="id" column="evaluateId"/>
+                <result property="speed" column="speed"/>
+                <result property="attitude" column="attitude"/>
+                <result property="accordance" column="accordance"/>
+                <result property="describe" column="describe"/>
+                <result property="buyerId" column="buyer_id"/>
+                <result property="crateTime" column="crate_time"/>
+                <result property="modifiedTime" column="modified_time"/>
+            </collection>
+        </collection>
+    </resultMap>
+
+    <select id="getCommodity" resultMap="commodityList">
+        SELECT id,seller_id,goods_name,picture_url,price FROM commodity
+        WHERE
+        deleteFlag = 0 AND `number` > 0
+        <if test="condition != null">
+            AND goods_name LIKE CONCAT('%' ,#{condition}, '%') AND deleteFlag = 0
+            OR `describe` LIKE CONCAT('%' ,#{condition}, '%') AND deleteFlag = 0
+        </if>
+    </select>
+
+    <select id="getDetailedCommodity" resultMap="commodityList">
+        SELECT t1.id, t1.picture_url,t1.goods_name,t1.price,t1.`number`,t1.transaction,t1.`describe` AS commodityDescribe,
+        t2.number AS sellerId,t2.name,t2.address,t2.avatar AS sellerAvatar
+        FROM commodity t1
+        LEFT JOIN student t2 ON t1.seller_id = t2.number
+        WHERE t1.id = #{commodityId}
+    </select>
+
+    <select id="getMyCommodity" resultMap="commodityList">
+        SELECT id,goods_name,price,`number`,`describe`,`transaction`,picture_url
+        FROM commodity
+        WHERE seller_id = #{stuNumber} AND deleteFlag = 0 AND `number`>0
+        ORDER BY modified_time DESC
+    </select>
+
+    <insert id="addCommodity" useGeneratedKeys="true" keyProperty="commodity.commodityId">
+        INSERT INTO commodity
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            seller_id,
+            goods_name,
+            price,
+            `number`,
+            create_time,
+            modified_time,
+            `describe`,
+            `transaction`,
+            picture_url,
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            #{userNumber},
+            #{commodity.commodityName},
+            #{commodity.Price},
+            #{commodity.Number},
+            NOW(),
+            NOW(),
+            #{commodity.Describe},
+            #{commodity.Transaction},
+            #{commodity.commodityPic},
+        </trim>
+    </insert>
+
+    <update id="updateCommodity">
+        UPDATE commodity
+        <trim prefix="SET " suffixOverrides=",">
+            goods_name = #{commodity.commodityName},
+            price = #{commodity.Price},
+            `number` = #{commodity.Number},
+            `describe` = #{commodity.Describe},
+            `transaction` = #{commodity.Transaction},
+            modified_time = NOW(),
+            picture_url = #{commodity.commodityPic},
+        </trim>
+        WHERE id = #{commodity.commodityId} AND seller_id = #{userNumber} AND deleteFlag = 0
+    </update>
+
+    <update id="deleteCommodity">
+        UPDATE commodity SET deleteFlag = 1,modified_time = NOW()
+        WHERE id = #{commodityId} AND seller_id = #{userNumber}
+    </update>
+
+    <update id="deleteLotCommodity">
+        UPDATE commodity SET deleteFlag = 1,modified_time = NOW()
+        WHERE seller_id = #{userNumber} AND id IN
+        <foreach collection="commodityIdList" item="item" open="(" index="index" close=")" separator=",">
+            #{item}
+        </foreach>
+    </update>
+
+    <update id="updateCommodityPic">
+        UPDATE commodity SET picture_url = #{picUrl} WHERE id = #{Id}
+    </update>
+
+    <update id="updateCommodityNumber">
+        UPDATE commodity SET `number` = #{Number}
+        WHERE id = #{commodityId} AND deleteFlag = 0
+    </update>
+
+    <update id="adminDeleteCommodity">
+        UPDATE commodity SET deleteFlag = 1
+        WHERE id = #{commodityId}
+    </update>
+</mapper>

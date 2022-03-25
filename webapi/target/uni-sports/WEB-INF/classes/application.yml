@@ -1,0 +1,39 @@
+server:
+  port: 8086
+  tomcat:
+    uri-encoding: UTF-8
+    basedir: ${user.home}/tomcat/tmp
+    max-http-post-size: -1
+  max-http-header-size: 4048576
+
+spring:
+  jmx:
+    default-domain: uspapi
+  #activiti Start
+  activiti:
+    database-schema-update: true
+    job-executor-activate: true
+    history-level: full
+    # 自动部署验证设置:true-开启（默认）、false-关闭
+    check-process-definitions: false
+    ext:
+      database-schema-update: false
+  #activiti End
+  http:
+    encoding:
+      charset: UTF-8
+  profiles:
+    active: dev,sso
+
+
+mybatis-plus:
+  mapper-locations: classpath*:/net/unisports/sports/**/dao/*Mapper.xml
+  type-aliases-package: net.unisports.sports.**.entity
+  configuration:
+    call-setters-on-nulls: true
+logging:
+  level:
+     com.campsg.mms.dao : debug
+     io.swagger.models.parameters.AbstractSerializableParameter: error
+
+spring.servlet.multipart.max-file-size: 50MB

@@ -1,0 +1,49 @@
+spring:
+  datasource:
+     druid:
+         url: jdbc:mysql://192.168.10.56:3306/clouddc?useUnicode=true&characterEncoding=utf8&serverTimezone=GMT%2B8&useSSL=false&allowPublicKeyRetrieval=true&allowMultiQueries=true
+         #root
+         username: root
+         #123456
+         password: 123456
+         driver-class-name: com.mysql.jdbc.Driver
+         initialSize: 5
+         minIdle: 5
+         maxActive: 20
+         maxWait: 60000
+         timeBetweenEvictionRunsMillis: 60000
+         minEvictableIdleTimeMillis: 300000
+         validationQuery: SELECT 1
+         testWhileIdle: true
+         testOnBorrow: false
+         testOnReturn: false
+         filters: stat,wall,log4j
+     type: com.alibaba.druid.pool.DruidDataSource
+
+  redis:
+    host: 192.168.10.56
+    port: 6379
+    # Redis服务器连接密码（默认为空）
+    password: 123
+    pool:
+      # 连接池最大连接数（使用负值表示没有限制）
+      max-active: 100
+      # 连接池最大阻塞等待时间（使用负值表示没有限制）
+      max-wait: 1
+      # 连接池中的最大空闲连接
+      max-idle: 300
+      # 连接池中的最小空闲连接
+      min-idle: 0
+      max-wait-millis: 20000
+    # 连接超时时间（毫秒）
+    timeout: 100000
+    database: 9
+
+#静态文件路径
+staticDir: /STATIC_RES/
+#主库名称
+mainDb: clouddc
+#默认第几页
+pageNum: 1
+#每页多少条
+pageSize: 15

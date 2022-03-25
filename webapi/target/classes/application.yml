@@ -1,0 +1,45 @@
+server:
+  port: 8086
+  tomcat:
+    uri-encoding: UTF-8
+    basedir: ${user.home}/tomcat/tmp
+    max-http-post-size: -1
+  max-http-header-size: 4048576
+
+ws:
+  port: 9090
+  title: 聊天
+  host: 0.0.0.0
+  boss-count: 1
+  work-count: 100
+  allow-custom-requests: true
+  upgrade-timeout: 10000
+  ping-timeout: 60000
+  ping-interval: 25000
+
+spring:
+  jmx:
+    default-domain: uspapi
+  http:
+    encoding:
+      charset: UTF-8
+  profiles:
+    active: dev
+
+
+mybatis-plus:
+  mapper-locations: classpath*:/com/lingshao/secondhand/**/dao/*Mapper.xml
+  type-aliases-package: com.lingshao.secondhand.**.entity
+  configuration:
+    call-setters-on-nulls: true
+logging:
+  level:
+     com.campsg.mms.dao : debug
+     io.swagger.models.parameters.AbstractSerializableParameter: error
+
+spring.servlet.multipart.max-file-size: 50MB
+
+# 是否开启sql语句打印
+# 开启：org.apache.ibatis.logging.stdout.StdOutImpl
+# 关闭：org.apache.ibatis.logging.nologging.NoLoggingImpl
+mybatis.configuration.log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
